@@ -64,8 +64,7 @@ const { home, dining, location, offers } = site;
   <section class="section">
     <div class="wrap dining">
       <div>
-        <p class="label">Dining</p>
-        <h2 class="display">{dining.name}</h2>
+        <h2 class="display">Dinner in {dining.name}</h2>
         <p class="lede">{dining.intro}</p>
         <a class="btn btn-quiet" href="/dining/">Menus and hours</a>
       </div>
@@ -94,7 +93,6 @@ const { home, dining, location, offers } = site;
         </svg>
       </div>
       <div>
-        <p class="label">Getting here</p>
         <h2 class="display">At the end of Heron Lane</h2>
         <p class="lede">{location.intro}</p>
         <address>
@@ -131,7 +129,7 @@ const { home, dining, location, offers } = site;
     position: relative;
     min-height: clamp(520px, calc(100svh - 64px - 96px), 760px);
     overflow: hidden;
-    background: #e4e9e6;
+    background: #dfe5e2;
   }
   .scene {
     position: absolute;
@@ -272,7 +270,7 @@ const { home, dining, location, offers } = site;
     border-top: 1px solid var(--line-strong);
   }
   .offers li {
-    padding: 24px 24px 8px 0;
+    padding: 24px 24px 24px 0;
   }
   .offers li + li {
     padding-left: 24px;

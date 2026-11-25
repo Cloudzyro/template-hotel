@@ -70,7 +70,7 @@ export const site = {
   home: {
     headline: "A quiet house on the tide line",
     intro:
-      "Fourteen rooms in an 1890s boarding house on the Calder marsh. Wide windows, cotton sheets, a dining room that keeps the fire going from October, and a dock where the tide does most of the scheduling.",
+      "Fourteen rooms in an 1890s boarding house on the Calder marsh, with wide windows over the reeds, a dining room with a wood grill, and a dock where the tide does the scheduling.",
     arrival: {
       title: "Arriving",
       text: [

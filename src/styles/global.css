@@ -111,12 +111,6 @@ p {
   padding: clamp(64px, 9vw, 112px) 0;
 }
 
-.label {
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-
 .lede {
   font-size: clamp(18px, 1.6vw, 20px);
   line-height: 1.55;
