@@ -1,0 +1,19 @@
+---
+import { roomScene, type View } from "../lib/scenes";
+import type { Palette } from "../data/site";
+
+interface Props {
+  view: View;
+  palette: Palette;
+  label: string;
+  uid: string;
+  class?: string;
+}
+
+const { view, palette, label, uid, class: className } = Astro.props;
+const svg = roomScene(view, palette).replaceAll('id="w-', `id="${uid}-w-`).replaceAll("url(#w-", `url(#${uid}-w-`);
+---
+
+<svg class={className} viewBox="0 0 800 560" role="img" aria-label={label} preserveAspectRatio="xMidYMid slice">
+  <Fragment set:html={svg} />
+</svg>

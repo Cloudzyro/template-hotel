@@ -1,0 +1,333 @@
+---
+import Base from "../layouts/Base.astro";
+import BookingWidget from "../components/BookingWidget.astro";
+import RoomCard from "../components/RoomCard.astro";
+import { houseScene, mapScene } from "../lib/scenes";
+import { site, rooms } from "../data/site";
+
+const featured = rooms.slice(0, 3);
+const { home, dining, location, offers } = site;
+---
+
+<Base>
+  <section class="hero">
+    <svg class="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMaxYMax slice" role="img" aria-label="Saltmarsh House, a white clapboard house with a porch, at the edge of the marsh and the channel">
+      <Fragment set:html={houseScene()} />
+    </svg>
+    <div class="wrap hero-text">
+      <h1 class="display">{home.headline}</h1>
+      <p class="lede">{home.intro}</p>
+    </div>
+  </section>
+
+  <div class="wrap book-wrap" id="book">
+    <h2 class="visually-hidden">Check availability</h2>
+    <BookingWidget />
+  </div>
+
+  <section class="section">
+    <div class="wrap arrival">
+      <div>
+        <h2 class="display">{home.arrival.title}</h2>
+      </div>
+      <div class="prose">
+        {home.arrival.text.map((t) => <p>{t}</p>)}
+      </div>
+      <dl class="facts">
+        {
+          home.arrival.facts.map((f) => (
+            <div>
+              <dt>{f.label}</dt>
+              <dd class="num">{f.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="section rooms-band">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Rooms</h2>
+        <a class="text-link" href="/rooms/">All rooms and rates</a>
+      </div>
+      <div class="rooms-grid">
+        <RoomCard room={featured[0]} large />
+        <div class="stack">
+          {featured.slice(1).map((r) => <RoomCard room={r} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap dining">
+      <div>
+        <p class="label">Dining</p>
+        <h2 class="display">{dining.name}</h2>
+        <p class="lede">{dining.intro}</p>
+        <a class="btn btn-quiet" href="/dining/">Menus and hours</a>
+      </div>
+      <table class="hours">
+        <caption class="visually-hidden">Opening hours</caption>
+        <tbody>
+          {
+            dining.hours.map((h) => (
+              <tr>
+                <th scope="row">{h.meal}</th>
+                <td>{h.days}</td>
+                <td class="num">{h.time}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section location-band">
+    <div class="wrap location">
+      <div class="frame map">
+        <svg viewBox="0 0 800 600" role="img" aria-label="Map of the Calder peninsula: Route 129 runs south from Wexham to the fish co-op, and Heron Lane leads to Saltmarsh House at the edge of the marsh">
+          <Fragment set:html={mapScene()} />
+        </svg>
+      </div>
+      <div>
+        <p class="label">Getting here</p>
+        <h2 class="display">At the end of Heron Lane</h2>
+        <p class="lede">{location.intro}</p>
+        <address>
+          {site.address.street}, {site.address.city}, {site.address.region} {site.address.postal}
+        </address>
+        <a class="btn btn-quiet" href="/location/">Directions</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <h2 class="display">Offers</h2>
+        <a class="text-link" href="/offers/">All offers</a>
+      </div>
+      <ol class="offers">
+        {
+          offers.map((o) => (
+            <li>
+              <p class="season">{o.season}</p>
+              <h3>{o.title}</h3>
+              <p class="text">{o.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: clamp(520px, calc(100svh - 64px - 96px), 760px);
+    overflow: hidden;
+    background: #e4e9e6;
+  }
+  .scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hero-text {
+    position: relative;
+    padding-top: clamp(48px, 10vh, 112px);
+    padding-bottom: 160px;
+  }
+  .hero-text h1 {
+    max-width: 11ch;
+    color: var(--ink);
+  }
+  .hero-text .lede {
+    margin-top: 24px;
+    max-width: 30rem;
+  }
+  .book-wrap {
+    position: relative;
+    margin-top: -64px;
+    z-index: 2;
+  }
+
+  .arrival {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 32px 64px;
+  }
+  .facts {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 16px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .facts dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .facts dd {
+    margin: 4px 0 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .rooms-band {
+    background: var(--paper);
+    border-block: 1px solid var(--line);
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 32px;
+  }
+  .stack {
+    display: grid;
+    gap: 32px;
+  }
+  .stack :global(.pic) {
+    aspect-ratio: 16 / 9;
+  }
+
+  .dining {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .dining .lede {
+    margin: 20px 0 28px;
+  }
+  .hours {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .hours th,
+  .hours td {
+    text-align: left;
+    padding: 14px 12px 14px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .hours th {
+    font-weight: 500;
+  }
+  .hours td {
+    color: var(--ink-2);
+  }
+  .hours td:last-child {
+    text-align: right;
+    padding-right: 0;
+    white-space: nowrap;
+  }
+
+  .location-band {
+    background: var(--raised);
+  }
+  .location {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .map svg {
+    width: 100%;
+    height: auto;
+  }
+  .location .lede {
+    margin: 20px 0 16px;
+  }
+  .location address {
+    font-style: normal;
+    color: var(--ink-2);
+    margin-bottom: 28px;
+  }
+
+  .offers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  .offers li {
+    padding: 24px 24px 8px 0;
+  }
+  .offers li + li {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+  .season {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .offers .text {
+    color: var(--ink-2);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .arrival,
+    .dining,
+    .location,
+    .rooms-grid {
+      grid-template-columns: 1fr;
+    }
+    .facts {
+      grid-column: 1;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .offers {
+      grid-template-columns: 1fr;
+    }
+    .offers li + li {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 600px) {
+    .hero {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .scene {
+      position: relative;
+      order: 2;
+      height: 300px;
+    }
+    .hero-text {
+      padding-top: 48px;
+      padding-bottom: 24px;
+    }
+    .hero-text .lede {
+      font-size: 17px;
+    }
+    .book-wrap {
+      margin-top: -32px;
+    }
+  }
+</style>

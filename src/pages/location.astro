@@ -1,0 +1,129 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import { mapScene } from "../lib/scenes";
+import { site } from "../data/site";
+const { location } = site;
+---
+
+<Base title="Getting here" description={`How to reach ${site.name} at Calder Point by car, train and bus, air or boat, and what's nearby.`}>
+  <PageHead title="Getting here" intro={location.intro} />
+
+  <section class="wrap layout">
+    <div class="frame map">
+      <svg viewBox="0 0 800 600" role="img" aria-label="Map of the Calder peninsula: Route 129 runs south from Wexham to the fish co-op, and Heron Lane leads to Saltmarsh House at the edge of the marsh">
+        <Fragment set:html={mapScene()} />
+      </svg>
+    </div>
+    <div>
+      <address>
+        <span class="name">{site.name}</span><br />
+        {site.address.street}<br />
+        {site.address.city}, {site.address.region} {site.address.postal}<br />
+        <a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a>
+      </address>
+      <dl class="directions">
+        {
+          location.directions.map((d) => (
+            <div>
+              <dt>{d.mode}</dt>
+              <dd>{d.text}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap nearby">
+    <h2 class="display">Nearby</h2>
+    <ul>
+      {
+        location.nearby.map((n) => (
+          <li>
+            <div class="row">
+              <h3>{n.name}</h3>
+              <span class="dist num">{n.distance}</span>
+            </div>
+            <p>{n.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .map svg {
+    width: 100%;
+    height: auto;
+  }
+  address {
+    font-style: normal;
+    line-height: 1.7;
+    color: var(--ink-2);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .name {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .directions {
+    margin: 0;
+  }
+  .directions div {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  dt {
+    font-weight: 500;
+  }
+  dd {
+    margin: 6px 0 0;
+    color: var(--ink-2);
+  }
+  .nearby {
+    padding-top: 96px;
+    padding-bottom: 112px;
+  }
+  .nearby ul {
+    list-style: none;
+    padding: 0;
+    margin: 32px 0 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 48px;
+  }
+  .nearby li {
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .dist {
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .nearby p {
+    color: var(--ink-2);
+    margin-top: 6px;
+  }
+  @media (max-width: 860px) {
+    .layout,
+    .nearby ul {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,157 @@
+---
+import { site } from "../data/site";
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${site.name}, home`}>
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <path d="M4 18c3-2 5-2 8 0s5 2 8 0 4-1.5 4-1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <path d="M4 22c3-2 5-2 8 0s5 2 8 0 4-1.5 4-1.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".5" />
+        <path d="M9 14V8l5-4 5 4v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+      </svg>
+      <span>{site.name}</span>
+    </a>
+    <nav aria-label="Main">
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu">Menu</button>
+      <ul id="site-menu">
+        {
+          site.nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={path.startsWith(item.href) ? "page" : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="book"><a class="btn btn-primary" href="/#book">Book a room</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>(".menu-btn");
+  const menu = document.getElementById("site-menu");
+  btn?.addEventListener("click", () => {
+    const open = btn.getAttribute("aria-expanded") === "true";
+    btn.setAttribute("aria-expanded", String(!open));
+    menu?.classList.toggle("open", !open);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && btn?.getAttribute("aria-expanded") === "true") {
+      btn.setAttribute("aria-expanded", "false");
+      menu?.classList.remove("open");
+      btn.focus();
+    }
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--fog);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--kelp);
+  }
+  .brand span {
+    color: var(--ink);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  ul a:not(.btn) {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  ul a:not(.btn):hover {
+    color: var(--ink);
+    background: var(--raised);
+  }
+  ul a[aria-current="page"] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--kelp);
+    text-underline-offset: 6px;
+  }
+  .book {
+    margin-left: 12px;
+  }
+  .book .btn {
+    min-height: 36px;
+    padding: 0 16px;
+  }
+  .menu-btn {
+    display: none;
+    font: inherit;
+    font-size: 15px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  @media (max-width: 900px) {
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+    }
+    ul {
+      display: none;
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 12px var(--gutter) 20px;
+      background: var(--fog);
+      border-bottom: 1px solid var(--line);
+    }
+    ul.open {
+      display: flex;
+    }
+    ul a:not(.btn) {
+      height: 44px;
+      font-size: 17px;
+    }
+    .book {
+      margin: 12px 0 0;
+    }
+    .book .btn {
+      width: 100%;
+      min-height: 44px;
+    }
+  }
+</style>

@@ -1,0 +1,152 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import { site } from "../data/site";
+const { dining } = site;
+---
+
+<Base title="Dining" description={`${dining.name} at ${site.name}: breakfast for guests, dinner for everyone, cooked over a wood grill with fish from Calder Point.`}>
+  <PageHead title={dining.name} intro={dining.intro} />
+
+  <section class="wrap hours-wrap">
+    <h2 class="sub">Hours</h2>
+    <table class="hours">
+      <thead>
+        <tr><th scope="col">Meal</th><th scope="col">Days</th><th scope="col">Time</th><th scope="col">Note</th></tr>
+      </thead>
+      <tbody>
+        {
+          dining.hours.map((h) => (
+            <tr>
+              <th scope="row">{h.meal}</th>
+              <td>{h.days}</td>
+              <td class="num">{h.time}</td>
+              <td class="note">{h.note}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="wrap menus">
+    {
+      dining.menus.map((menu) => (
+        <div class="menu">
+          <h2 class="display">{menu.title}</h2>
+          <ul>
+            {menu.items.map((item) => (
+              <li>
+                <div>
+                  <p class="dish">{item.name}</p>
+                  <p class="detail">{item.detail}</p>
+                </div>
+                <p class="price num">${item.price}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </section>
+
+  <section class="wrap closing">
+    <p>{dining.note}</p>
+    <a class="btn btn-primary" href="/contact/?topic=Dinner+in+the+Long+Room">Book a table</a>
+  </section>
+</Base>
+
+<style>
+  .sub {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .hours {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .hours th,
+  .hours td {
+    text-align: left;
+    padding: 14px 16px 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  thead th {
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  tbody th {
+    font-weight: 500;
+  }
+  .hours td {
+    color: var(--ink-2);
+  }
+  .note {
+    color: var(--muted) !important;
+  }
+  .menus {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    padding-top: 80px;
+  }
+  .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 0;
+  }
+  .menu li {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .dish {
+    font-weight: 500;
+  }
+  .detail {
+    color: var(--ink-2);
+    font-size: 15px;
+    margin-top: 2px;
+  }
+  .price {
+    color: var(--ink);
+  }
+  .closing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-top: 48px;
+    padding-bottom: 112px;
+    color: var(--ink-2);
+  }
+  @media (max-width: 760px) {
+    .menus {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .hours thead {
+      display: none;
+    }
+    .hours tr {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .hours th,
+    .hours td {
+      border: 0;
+      padding: 2px 0;
+    }
+    .hours td.num {
+      text-align: right;
+    }
+  }
+</style>

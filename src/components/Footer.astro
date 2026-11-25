@@ -1,0 +1,100 @@
+---
+import { site } from "../data/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="name">{site.name}</p>
+      <p class="muted">{site.footer.note}</p>
+    </div>
+    <address>
+      {site.address.street}<br />
+      {site.address.city}, {site.address.region} {site.address.postal}<br />
+      <a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a><br />
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+    </address>
+    <nav aria-label="Footer">
+      <ul>
+        {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+    <ul>
+      {site.footer.social.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+    </ul>
+  </div>
+  <div class="wrap">
+    <div class="base">
+      <p>&copy; {year} {site.name}</p>
+      <p>Check-in {site.checkIn}, check-out {site.checkOut}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--kelp-deep);
+    color: #dfe3dc;
+    padding: 64px 0 32px;
+    font-size: 15px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  .name {
+    font-family: var(--display);
+    font-size: 28px;
+    color: #f4f3ec;
+    margin-bottom: 8px;
+  }
+  .muted {
+    color: #aeb8af;
+    max-width: 18rem;
+  }
+  address {
+    font-style: normal;
+    line-height: 1.8;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+    align-content: start;
+  }
+  a {
+    color: #dfe3dc;
+    text-decoration-color: rgba(223, 227, 220, 0.3);
+  }
+  a:hover {
+    color: #fff;
+  }
+  .site-footer :focus-visible {
+    outline-color: #f4f3ec;
+  }
+  .base {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(223, 227, 220, 0.12);
+    color: #aeb8af;
+    font-size: 14px;
+  }
+  @media (max-width: 800px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

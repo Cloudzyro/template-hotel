@@ -1,0 +1,48 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import InquiryForm from "../components/InquiryForm.astro";
+import { site } from "../data/site";
+---
+
+<Base title="Contact" description={`Write to ${site.name} about a stay, dinner in the Long Room, or the whole house.`}>
+  <PageHead title="Write to us" intro="About a stay, a table in the Long Room or the whole house. A person reads every message and replies within a day." />
+  <section class="wrap layout">
+    <InquiryForm />
+    <aside>
+      <h2>Or call the desk</h2>
+      <p><a href={`tel:${site.phone.replace(/[^\d+]/g, "")}`}>{site.phone}</a>, 8:00 am to 9:00 pm</p>
+      <h2>Email</h2>
+      <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <h2>Address</h2>
+      <p>{site.address.street}<br />{site.address.city}, {site.address.region} {site.address.postal}</p>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 64px;
+    padding-bottom: 112px;
+    align-items: start;
+  }
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 24px;
+  }
+  h2:first-child {
+    margin-top: 0;
+  }
+  aside p {
+    color: var(--ink-2);
+    margin-top: 4px;
+  }
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

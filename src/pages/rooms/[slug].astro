@@ -1,0 +1,318 @@
+---
+import Base from "../../layouts/Base.astro";
+import RoomScene from "../../components/RoomScene.astro";
+import BookingWidget from "../../components/BookingWidget.astro";
+import RoomCard from "../../components/RoomCard.astro";
+import { rooms, site, type Room } from "../../data/site";
+
+export function getStaticPaths() {
+  return rooms.map((room) => ({ params: { slug: room.slug }, props: { room } }));
+}
+
+interface Props {
+  room: Room;
+}
+const { room } = Astro.props;
+const others = rooms.filter((r) => r.slug !== room.slug).slice(0, 2);
+const total = room.gallery.length;
+---
+
+<Base title={room.name} description={`${room.name} at ${site.name}: ${room.summary} ${room.size}, ${room.beds}, sleeps ${room.sleeps}. From $${room.rateFrom} a night.`}>
+  <div class="wrap crumbs"><a href="/rooms/">Rooms</a> <span aria-hidden="true">/</span> <span>{room.name}</span></div>
+
+  <section class="wrap gallery" aria-roledescription="carousel" aria-label={`${room.name} pictures`} data-gallery>
+    <div class="stage frame">
+      {
+        room.gallery.map((g, i) => (
+          <figure
+            class="slide"
+            id={`slide-${i}`}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${total}: ${g.caption}`}
+            hidden={i !== 0}
+          >
+            <RoomScene view={g.view} palette={room.palette} label={`${room.name}: ${g.caption}`} uid={`g${i}`} />
+          </figure>
+        ))
+      }
+    </div>
+    <div class="controls">
+      <p class="caption" aria-live="polite" data-caption>
+        <span class="num">1 / {total}</span> {room.gallery[0].caption}
+      </p>
+      <div class="buttons">
+        <button type="button" class="btn btn-quiet" data-prev aria-label="Previous picture">Previous</button>
+        <button type="button" class="btn btn-quiet" data-next aria-label="Next picture">Next</button>
+      </div>
+    </div>
+    <ul class="thumbs">
+      {
+        room.gallery.map((g, i) => (
+          <li>
+            <button type="button" class="thumb" data-thumb={i} aria-label={`Show picture ${i + 1}: ${g.caption}`} aria-current={i === 0 ? "true" : undefined}>
+              <RoomScene view={g.view} palette={room.palette} label="" uid={`t${i}`} />
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="wrap detail">
+    <div class="main">
+      <div class="title-row">
+        <h1 class="display">{room.name}</h1>
+        <span class="key">Room {room.number}</span>
+      </div>
+      <p class="kind">{room.kind}</p>
+      <div class="prose lead">
+        {room.description.map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="specs">
+        <div><dt>Size</dt><dd class="num">{room.size}</dd></div>
+        <div><dt>Beds</dt><dd>{room.beds}</dd></div>
+        <div><dt>Sleeps</dt><dd class="num">{room.sleeps}</dd></div>
+        <div><dt>View</dt><dd>{room.view}</dd></div>
+      </dl>
+      <h2 class="sub">In the room</h2>
+      <ul class="amenities">
+        {room.amenities.map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+    <aside class="side">
+      <p class="rate"><span class="num">${room.rateFrom}</span> a night</p>
+      <p class="rate-note">From, for two guests, with breakfast. Check-in {site.checkIn}, check-out {site.checkOut}.</p>
+      <BookingWidget compact room={room.slug} />
+    </aside>
+  </section>
+
+  <section class="wrap">
+    <div class="more">
+      <h2 class="display">Other rooms</h2>
+      <div class="more-grid">
+        {others.map((r) => <RoomCard room={r} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-gallery]").forEach((root) => {
+    const slides = [...root.querySelectorAll<HTMLElement>(".slide")];
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>("[data-thumb]")];
+    const caption = root.querySelector<HTMLElement>("[data-caption]")!;
+    let index = 0;
+    const show = (next: number) => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((s, i) => (s.hidden = i !== index));
+      thumbs.forEach((t, i) => (i === index ? t.setAttribute("aria-current", "true") : t.removeAttribute("aria-current")));
+      const label = slides[index].getAttribute("aria-label") ?? "";
+      caption.innerHTML = "";
+      const n = Object.assign(document.createElement("span"), { className: "num", textContent: `${index + 1} / ${slides.length}` });
+      caption.append(n, " " + label.replace(/^\d+ of \d+: /, ""));
+    };
+    root.querySelector("[data-prev]")?.addEventListener("click", () => show(index - 1));
+    root.querySelector("[data-next]")?.addEventListener("click", () => show(index + 1));
+    thumbs.forEach((t, i) => t.addEventListener("click", () => show(i)));
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") show(index - 1);
+      if (e.key === "ArrowRight") show(index + 1);
+    });
+  });
+</script>
+
+<style>
+  .crumbs {
+    padding-top: 24px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .crumbs a {
+    color: var(--ink-2);
+  }
+  .gallery {
+    padding-top: 16px;
+  }
+  .stage {
+    aspect-ratio: 16 / 9;
+    position: relative;
+  }
+  .slide {
+    margin: 0;
+    position: absolute;
+    inset: 0;
+  }
+  .slide :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .caption {
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+  .caption :global(.num) {
+    color: var(--muted);
+    margin-right: 8px;
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+  }
+  .buttons .btn {
+    min-height: 36px;
+    padding: 0 14px;
+  }
+  .thumbs {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    max-width: 600px;
+  }
+  .thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--raised);
+    opacity: 0.7;
+    transition: opacity 160ms var(--ease), border-color 160ms var(--ease);
+  }
+  .thumb:hover {
+    opacity: 1;
+  }
+  .thumb[aria-current="true"] {
+    opacity: 1;
+    border-color: var(--kelp);
+    box-shadow: 0 0 0 1px var(--kelp);
+  }
+  .thumb :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .detail {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 64px;
+    padding-top: 64px;
+    padding-bottom: 80px;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .kind {
+    margin-top: 8px;
+    color: var(--muted);
+  }
+  .lead {
+    margin-top: 24px;
+    font-size: 17px;
+    max-width: 38rem;
+  }
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 32px 0 0;
+    padding: 20px 0;
+    border-block: 1px solid var(--line);
+  }
+  .specs dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .specs dd {
+    margin: 4px 0 0;
+    font-weight: 500;
+  }
+  .sub {
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 32px;
+  }
+  .amenities {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    columns: 2;
+    column-gap: 32px;
+    color: var(--ink-2);
+  }
+  .amenities li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    break-inside: avoid;
+  }
+  .side {
+    align-self: start;
+    position: sticky;
+    top: 88px;
+  }
+  .rate {
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+  .rate .num {
+    font-family: var(--display);
+    font-size: 44px;
+    color: var(--ink);
+    margin-right: 4px;
+  }
+  .rate-note {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 4px 0 20px;
+  }
+  .more {
+    padding-top: 64px;
+    padding-bottom: 112px;
+    border-top: 1px solid var(--line);
+  }
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    margin-top: 32px;
+  }
+  @media (max-width: 860px) {
+    .detail,
+    .more-grid {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      position: static;
+    }
+    .specs {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .amenities {
+      columns: 1;
+    }
+    .stage {
+      aspect-ratio: 4 / 3;
+    }
+    .controls {
+      flex-wrap: wrap;
+    }
+  }
+</style>

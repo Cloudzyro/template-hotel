@@ -1,0 +1,23 @@
+{
+  "name": "template-hotel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A boutique hotel website template built with Astro: rooms with galleries, a booking widget, dining, location and offers.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "3.7.4",
+    "@fontsource-variable/hanken-grotesk": "5.3.0",
+    "@fontsource/libre-caslon-display": "5.3.0",
+    "astro": "7.4.10"
+  },
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "packageManager": "pnpm@12.10.1"
+}

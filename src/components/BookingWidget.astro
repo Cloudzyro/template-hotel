@@ -1,0 +1,127 @@
+---
+// Builds a link to your booking engine with the guest's choices as query parameters.
+// Set PUBLIC_BOOKING_URL (or bookingUrl in src/data/site.ts). With neither set,
+// the form goes to the contact page and fills in an inquiry instead.
+import { site, rooms } from "../data/site";
+
+interface Props {
+  compact?: boolean;
+  room?: string;
+}
+const { compact = false, room = "" } = Astro.props;
+const bookingUrl = import.meta.env.PUBLIC_BOOKING_URL || site.bookingUrl;
+const p = bookingUrl
+  ? site.bookingParams
+  : { checkIn: "arrive", checkOut: "depart", adults: "adults", children: "children", room: "room" };
+const action = bookingUrl || "/contact/";
+---
+
+<form class:list={["booking", { compact }]} method="get" action={action} data-booking aria-label="Check availability">
+  <label class="field">
+    <span>Arrive</span>
+    <input type="date" name={p.checkIn} required data-in />
+  </label>
+  <label class="field">
+    <span>Depart</span>
+    <input type="date" name={p.checkOut} required data-out />
+  </label>
+  <label class="field small">
+    <span>Adults</span>
+    <select name={p.adults}>
+      {[1, 2, 3, 4].map((n) => <option value={n} selected={n === 2}>{n}</option>)}
+    </select>
+  </label>
+  <label class="field small">
+    <span>Children</span>
+    <select name={p.children}>
+      {[0, 1, 2, 3].map((n) => <option value={n}>{n}</option>)}
+    </select>
+  </label>
+  <label class="field room">
+    <span>Room</span>
+    <select name={p.room}>
+      <option value="">Any room</option>
+      {rooms.map((r) => <option value={r.slug} selected={r.slug === room}>{r.name}</option>)}
+    </select>
+  </label>
+  <button class="btn btn-primary" type="submit">{bookingUrl ? "Check availability" : "Ask about dates"}</button>
+  <p class="nights num" data-nights aria-live="polite"></p>
+</form>
+
+<script>
+  const iso = (d: Date) => {
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  };
+  document.querySelectorAll<HTMLFormElement>("form[data-booking]").forEach((form) => {
+    const checkIn = form.querySelector<HTMLInputElement>("[data-in]")!;
+    const checkOut = form.querySelector<HTMLInputElement>("[data-out]")!;
+    const nights = form.querySelector<HTMLElement>("[data-nights]")!;
+    const today = new Date();
+    checkIn.min = iso(today);
+    const update = () => {
+      if (!checkIn.value) return;
+      const start = new Date(checkIn.value + "T12:00:00");
+      const next = new Date(start);
+      next.setDate(start.getDate() + 1);
+      checkOut.min = iso(next);
+      if (!checkOut.value || checkOut.value <= checkIn.value) {
+        const two = new Date(start);
+        two.setDate(start.getDate() + 2);
+        checkOut.value = iso(two);
+      }
+      const count = Math.round((new Date(checkOut.value + "T12:00:00").getTime() - start.getTime()) / 86400000);
+      nights.textContent = count > 0 ? `${count} ${count === 1 ? "night" : "nights"}` : "";
+    };
+    checkIn.addEventListener("change", update);
+    checkOut.addEventListener("change", update);
+  });
+</script>
+
+<style>
+  .booking {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr 1.3fr auto;
+    gap: 12px;
+    align-items: end;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(29, 34, 31, 0.06);
+    position: relative;
+  }
+  .nights {
+    position: absolute;
+    left: 20px;
+    bottom: -28px;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+  }
+  .compact {
+    grid-template-columns: 1fr 1fr;
+    box-shadow: none;
+  }
+  .compact .room,
+  .compact .btn {
+    grid-column: 1 / -1;
+  }
+  .compact .nights {
+    position: static;
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 960px) {
+    .booking:not(.compact) {
+      grid-template-columns: 1fr 1fr;
+    }
+    .booking:not(.compact) .room,
+    .booking:not(.compact) .btn {
+      grid-column: 1 / -1;
+    }
+    .booking:not(.compact) .nights {
+      position: static;
+      grid-column: 1 / -1;
+    }
+  }
+</style>

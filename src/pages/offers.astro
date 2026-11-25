@@ -1,0 +1,95 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+import { site } from "../data/site";
+---
+
+<Base title="Offers" description={`Seasonal offers at ${site.name}: midweek stays, dinner and two nights, and the whole house for groups.`}>
+  <PageHead title="Offers" intro="A few ways to stay for less, or for longer. Quote the code when you book, or ask us and we'll apply it." />
+  <section class="wrap">
+    <ol class="offers">
+      {
+        site.offers.map((o) => (
+          <li>
+            <div class="when">{o.season}</div>
+            <div class="what">
+              <h2>{o.title}</h2>
+              <p>{o.text}</p>
+              <p class="terms">{o.terms}</p>
+            </div>
+            <div class="how">
+              {o.code ? (
+                <p class="code">
+                  Code <code>{o.code}</code>
+                </p>
+              ) : (
+                <a class="btn btn-quiet" href="/contact/">Ask about dates</a>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .offers {
+    list-style: none;
+    margin: 0 0 112px;
+    padding: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  .offers li {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    gap: 32px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .when {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  h2 {
+    font-family: var(--display);
+    font-size: 32px;
+    line-height: 1.15;
+  }
+  .what p {
+    color: var(--ink-2);
+    margin-top: 12px;
+    max-width: 36rem;
+  }
+  .what .terms {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .how {
+    justify-self: end;
+  }
+  .code {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--raised);
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+  @media (max-width: 760px) {
+    .offers li {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .how {
+      justify-self: start;
+    }
+  }
+</style>

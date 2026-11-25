@@ -1,0 +1,25 @@
+---
+import Base from "../layouts/Base.astro";
+import PageHead from "../components/PageHead.astro";
+---
+
+<Base title="Page not found">
+  <PageHead title="This page went out with the tide" intro="The address may have changed. Try the rooms, or head back to the front door.">
+    <div class="actions">
+      <a class="btn btn-primary" href="/">Home</a>
+      <a class="btn btn-quiet" href="/rooms/">Rooms</a>
+    </div>
+  </PageHead>
+  <div class="spacer"></div>
+</Base>
+
+<style>
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .spacer {
+    height: 120px;
+  }
+</style>

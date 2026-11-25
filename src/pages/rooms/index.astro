@@ -1,0 +1,39 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageHead from "../../components/PageHead.astro";
+import RoomCard from "../../components/RoomCard.astro";
+import { rooms } from "../../data/site";
+---
+
+<Base title="Rooms" description="Fourteen rooms at Saltmarsh House: marsh and harbor rooms, a loft suite, a step-free garden room and the boathouse on the dock.">
+  <PageHead
+    title="Rooms"
+    intro="Fourteen rooms in five kinds, from a queen over the reeds to the boathouse on the dock. Every rate includes breakfast in the Long Room."
+  />
+  <div class="wrap list">
+    {rooms.map((room, i) => <RoomCard room={room} large={i === 0} />)}
+  </div>
+</Base>
+
+<style>
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 32px;
+    padding-bottom: 112px;
+  }
+  .list > :global(.large) {
+    grid-column: 1 / -1;
+  }
+  .list > :global(.large .pic) {
+    aspect-ratio: 21 / 9;
+  }
+  @media (max-width: 760px) {
+    .list {
+      grid-template-columns: 1fr;
+    }
+    .list > :global(.large .pic) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>
